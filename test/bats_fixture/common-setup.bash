@@ -24,5 +24,5 @@ wait_until () {
     CMD="$1"
     INTERVAL=${2:-1.0}
     TIMEO="${3:-300}"
-    timeout "$TIMEO" bash -c "while ! $CMD; do sleep $INTERVAL; done"
+    timeout "$TIMEO" bash -c "set -o pipefail; while ! $CMD; do sleep $INTERVAL; done"
 }
