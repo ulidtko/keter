@@ -23,6 +23,6 @@ locate_keter_executable () {
 wait_until () {
     CMD="$1"
     INTERVAL=${2:-1.0}
-    TIMEO="${3:-300}"
+    TIMEO="${3:-10}"
     timeout "$TIMEO" bash -c "set -o pipefail; while ! $CMD; do sleep $INTERVAL; done"
 }
