@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-_locate_keter_executable () {
+locate_keter_executable () {
     # 1. If set already explicitly, and executable -- use that.
     test -x "$KETER" && { export KETER; return; }
     # 2. Perhaps we have a stack build ready
@@ -18,4 +18,11 @@ _locate_keter_executable () {
         echo "Compile the keter executable first, and/or point to it in KETER env-var"
         exit 1
     } >&2
+}
+
+wait_until () {
+    CMD="$1"
+    INTERVAL=${2:-1.0}
+    TIMEO="${3:-300}"
+    timeout "$TIMEO" bash -c "while ! $CMD; do sleep $INTERVAL; done"
 }
