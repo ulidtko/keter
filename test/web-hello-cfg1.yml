@@ -1,0 +1,9 @@
+stanzas:
+- type: webapp
+  hosts:
+  - localhost
+  - localhost:8000
+  ssl: false
+  exec: ../app/web-hello.py
+  env:
+    DELAY: '0.3'
