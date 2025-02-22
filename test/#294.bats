@@ -78,7 +78,7 @@ teardown () {
 
         #-- update the dummy again, with working version, verify reload
         cp -v $MYDIR/dummy.keter $KETER_DIR/incoming/dummy.keter
-        wait_until "tail $KETER_LOG | grep -q 'Reactivating app dummy'" 0.1 3
+        wait_until "tail $KETER_LOG | grep -q 'Reactivating app dummy'" 0.1 5
         run curl --max-time 1 -Ss localhost:$PORT
         assert_line --partial "This is dummy app"
         assert_not_equal "$output" "$LAST_OUTPUT" #-- expecting different PID, port
