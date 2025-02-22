@@ -7,3 +7,4 @@ stanzas:
   exec: ../app/web-hello.py
   env:
     DELAY: '0.3'
+  ensure-alive-time-bound: 2100100
