@@ -340,7 +340,7 @@ ensureAlive tstate RunningWebApp {..} = do
         return $ fromMaybe False res
       where
         testApp' = do
-            threadDelay $ 2 * 1000 * 1000
+            threadDelay $ 100 * 1000
             eres <- try $ connectTo "127.0.0.1" $ show port
             case eres of
                 Left (_ :: IOException) -> do
