@@ -59,7 +59,7 @@ teardown () {
 @test "Reproduce issue #294" { # https://github.com/snoyberg/keter/issues/294
     LAST_OUTPUT=''
     #-- It's a suspected race-condition in keter, so we spin the scenario multiple times.
-    for test_spin in $(seq 1000); do
+    for test_spin in $(seq 10000); do
         echo "===== Iteration $test_spin ====="
 
         #-- start the dummy

@@ -310,9 +310,9 @@ monitorProcess processTracker msetuid exec dir args env' rlog shouldRestart =
                 _ -> do
                     now <- getCurrentTime
                     case mlast of
-                        Just last | diffUTCTime now last < 5 -> do
-                            rio $ $logWarn $ "Process restarting too quickly, waiting before trying again: " <> decodeUtf8 exec
-                            threadDelay $ 5 * 1000 * 1000
+                        -- Just last | diffUTCTime now last < 0.999 -> do
+                        --     rio $ $logWarn $ "Process restarting too quickly, throttling: " <> decodeUtf8 exec
+                        --     threadDelay $ 1 * 1000 * 1000
                         _ -> return ()
                     let (cmd, args') =
                             case msetuid of
