@@ -34,7 +34,7 @@ setup () {
     bound_us=`yq '.stanzas[0].ensure-alive-time-bound' $MYDIR/web-hello-cfg2.yml`
     bound_s=`bc -lq <<< "$bound_us / 1000000"`
     #-- for reliability, the test amplifies the timeout
-    circuit_breaker=`bc -lq <<< "$bound_s" * 3 + 3`
+    circuit_breaker=`bc -lq <<< "$bound_s * 3 + 3"`
     export circuit_breaker
 
     locate_keter_executable
