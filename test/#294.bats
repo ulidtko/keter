@@ -10,6 +10,8 @@ setup () {
     test -x $(which python3)
     test -x $(which timeout)
     test -x $(which curl)
+    test -x $(which yq)
+    test -x $(which bc)
 
     #-- imports
     load bats-assert/load
@@ -26,6 +28,14 @@ setup () {
         install -m644 web-hello-cfg2.yml app-dummy/config/keter.yaml
         tar czf dummy-broken.keter -C app-dummy .
     )
+
+    #-- compute our timeout for the ensureAlive "circuit-breaker": the one
+    #-- which eventually abandons start attempts of dummy-broken.
+    bound_us=`yq '.stanzas[0].ensure-alive-time-bound' $MYDIR/web-hello-cfg2.yml`
+    bound_s=`bc -lq <<< "$bound_us / 1000000"`
+    #-- for reliability, the test amplifies the timeout
+    circuit_breaker=`bc -lq <<< "$bound_s" * 3 + 3`
+    export circuit_breaker
 
     locate_keter_executable
 
@@ -65,14 +75,13 @@ teardown () {
         #-- start the dummy
         cp -v $MYDIR/dummy.keter $KETER_DIR/incoming/dummy.keter
         wait_until "tail $KETER_LOG | grep -q 'Activating app dummy'" 0.1 3
-        run curl --max-time 1 -Ss localhost:8000/
+        run curl --max-time 1 -Ss localhost:$PORT/
         LAST_OUTPUT=$output
         assert_line --partial "This is dummy app"
 
         #-- update the dummy with a version that's broken
         cp -v $MYDIR/dummy-broken.keter $KETER_DIR/incoming/dummy.keter
-        circuit_breaker=$((18 * 5 + 3))
-        wait_until "tail $KETER_LOG | grep -q 'ensureAlive failed'" 1.0 $circuit_breaker
+        wait_until "tail $KETER_LOG | grep -q 'ensureAlive failed'" 0.1 $circuit_breaker
         run curl --max-time 1 -Ss localhost:$PORT
         assert_equal "$output" "$LAST_OUTPUT"
 
