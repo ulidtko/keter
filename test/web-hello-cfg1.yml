@@ -6,5 +6,6 @@ stanzas:
   ssl: false
   exec: ../app/web-hello.py
   env:
+    PYTHONUNBUFFERED: 'y'
     DELAY: '0.2'
   ensure-alive-time-bound: 2100100
