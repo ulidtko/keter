@@ -102,9 +102,9 @@ teardown () {
 
 bats::on_failure () {
     echo "----- keter log tail -----"
-    tail $KETER_LOG
+    tail "$KETER_LOG"
     echo "----- dummy log tail -----"
-    tail $DUMMY_LOG
+    tail "$DUMMY_LOG"
     echo "----- end keter logs ------"
 }
 
