@@ -365,6 +365,6 @@ terminateMonitoredProcess (MonitoredProcess mstatus) = do
     case status of
         Running pid -> do
             terminateProcess pid
-            threadDelay 1000000
+            threadDelay 100000
             killProcess pid
         _ -> return ()
