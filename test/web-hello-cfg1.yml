@@ -7,5 +7,5 @@ stanzas:
   exec: ../app/web-hello.py
   env:
     PYTHONUNBUFFERED: 'y'
-    DELAY: '0.2'
-  ensure-alive-time-bound: 2100100
+    DELAY: '0.030'
+  ensure-alive-time-bound: 500100

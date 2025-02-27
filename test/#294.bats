@@ -107,6 +107,9 @@ bats::on_failure () {
     tail "$DUMMY_LOG"
     echo "----- end keter logs ------"
 
+    # small cooldown, for the logs to flush fully
+    sleep 0.3
+
     rescue_dir="$MYDIR/last-test-fail"
     rm -rf "$rescue_dir/*"
     mkdir -p "$rescue_dir"
@@ -115,4 +118,5 @@ bats::on_failure () {
     # can also just pass --no-tempdir-cleanup
 }
 
+# tail -f /tmp/bats-run-*/test/1.out
 # tail -f /tmp/bats-run-*/file/1/log/{keter,app-dummy}.log
