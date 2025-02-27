@@ -330,7 +330,8 @@ monitorProcess processTracker msetuid exec dir args env' rlog shouldRestart =
                             rio $ $logError $ "Data.Conduit.Process.Unix.monitorProcess: " <> pack (show (e :: SomeException))
                             return (NeedsRestart, return ())
                         Right pid -> do
-                            rio $ $logInfo $ "Process created: " <> decodeUtf8 exec
+                            mNumPid <- getPid pid
+                            rio $ $logInfo $ "Process created: PID " <> pack (show mNumPid) <> ", exec " <> decodeUtf8 exec
                             return (Running pid, do
                                 TrackedProcess _ _ wait <- trackProcess processTracker pid
                                 ec <- wait
