@@ -64,7 +64,11 @@ setup () {
 
 teardown () {
     read pid < $BATS_FILE_TMPDIR/keter.pid
-    kill $pid
+    if test -e $BATS_FILE_TMPDIR/keter.keep; then
+        echo "Keter PID $pid -- LEFT RUNNING"
+    else
+        kill $pid
+    fi
 }
 
 @test "Reproduce issue #294" { # https://github.com/snoyberg/keter/issues/294
@@ -101,6 +105,7 @@ teardown () {
     done
 }
 
+#-- this gets called before teardown(), on failures only
 bats::on_failure () {
     echo "----- keter log tail -----"
     tail "$KETER_LOG"
@@ -117,6 +122,9 @@ bats::on_failure () {
     cp -r "$BATS_RUN_TMPDIR"/* "$rescue_dir"/
     echo "Test-run files rescued to $rescue_dir"
     # can also just pass --no-tempdir-cleanup
+
+    # flag teardown() to leave it running. (in this state, where test failure occured)
+    touch "$BATS_FILE_TMPDIR"/keter.keep
 }
 
 # tail -f /tmp/bats-run-*/test/1.out
