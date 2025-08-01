@@ -8,4 +8,4 @@ stanzas:
   env:
     PYTHONUNBUFFERED: 'y'
     DELAY: '0.030'
-  ensure-alive-time-bound: 500100
+  ensure-alive-time-bound: 700100

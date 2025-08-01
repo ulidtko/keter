@@ -2,6 +2,7 @@
 import http.server
 import os,sys
 import socketserver
+from datetime import datetime, timezone
 from http import HTTPStatus
 from time import sleep
 
@@ -16,13 +17,17 @@ listenport = int(os.getenv('PORT', 8000))
 startdelay = float(os.getenv('DELAY', 5))
 willcrash = os.getenv('DO_CRASH') is not None
 
-print(f"(pid {os.getpid()}) Dummy app starting up! DELAY {startdelay}{', DO_CRASH' if willcrash else ''}")
+def echo(*args):
+    now = datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M:%S.%f %Z')
+    print(now + ':', f"(pid {os.getpid()})", *args)
+
+echo(f"Dummy app starting up! DELAY {startdelay}{', DO_CRASH' if willcrash else ''}")
 sleep(startdelay)
 
 if willcrash:
-    print("Oops!")
+    echo("Oops!")
     sys.exit(1)
 
-print(f"(pid {os.getpid()}) Listening on port {listenport}")
+echo(f"Listening on port {listenport}")
 httpd = socketserver.TCPServer(('', listenport), Handler)
 httpd.serve_forever()
