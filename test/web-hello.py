@@ -16,13 +16,13 @@ listenport = int(os.getenv('PORT', 8000))
 startdelay = float(os.getenv('DELAY', 5))
 willcrash = os.getenv('DO_CRASH') is not None
 
-print(f"Dummy app starting up! DELAY={startdelay}, DO_CRASH={willcrash}")
+print(f"(pid {os.getpid()}) Dummy app starting up! DELAY {startdelay}{', DO_CRASH' if willcrash else ''}")
 sleep(startdelay)
 
 if willcrash:
     print("Oops!")
     sys.exit(1)
 
-print(f"Listening on port {listenport}")
+print(f"(pid {os.getpid()}) Listening on port {listenport}")
 httpd = socketserver.TCPServer(('', listenport), Handler)
 httpd.serve_forever()
