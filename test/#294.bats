@@ -76,6 +76,7 @@ teardown () {
     #-- It's a suspected race-condition in keter, so we spin the scenario multiple times.
     for test_spin in $(seq 99000); do
         echo "===== Iteration $test_spin ====="
+        echo -e "\x1b[1A\x1b[K     iteration $test_spin..." >&3
 
         #-- start the dummy
         cp -v $MYDIR/dummy.keter $KETER_DIR/incoming/dummy.keter
