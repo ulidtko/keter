@@ -28,6 +28,11 @@ if willcrash:
     echo("Oops!")
     sys.exit(1)
 
-echo(f"Listening on port {listenport}")
-httpd = socketserver.TCPServer(('', listenport), Handler)
+class Server(socketserver.TCPServer):
+    def server_activate(self):
+        """ Override. To log exactly when we started listening """
+        super().server_activate()
+        echo(f"LISTENING on {self.server_address}")
+
+httpd = Server(('', listenport), Handler)
 httpd.serve_forever()
