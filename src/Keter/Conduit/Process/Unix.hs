@@ -4,6 +4,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE TemplateHaskell #-}
+{-# LANGUAGE TypeApplications #-}
 
 module Keter.Conduit.Process.Unix
     ( -- * Process tracking
@@ -37,7 +38,7 @@ import Control.Concurrent.MVar
        , tryReadMVar
        )
 import Control.Exception
-       ( Exception
+       ( Exception (displayException)
        , SomeException
        , bracketOnError
        , finally
@@ -57,7 +58,7 @@ import Data.Conduit.List qualified as CL
 import Data.IORef (IORef, newIORef, readIORef, writeIORef)
 import Data.Monoid ((<>))
 import Data.Text (Text, pack)
-import Data.Text.Encoding (decodeUtf8)
+import Data.Text.Encoding (decodeUtf8, encodeUtf8)
 import Data.Time (diffUTCTime, getCurrentTime)
 import Data.Typeable (Typeable)
 import Foreign.C.Types
@@ -78,6 +79,7 @@ import Prelude
        , ($)
        , (*)
        , (<)
+       , (.)
        , (==)
        )
 import System.Exit (ExitCode)
@@ -116,8 +118,8 @@ killProcess ph = withProcessHandle_ ph $ \p_ -> case p_ of
     return p_
   _ -> error "Not implemented"
 
-ignoreExceptions :: IO () -> IO ()
-ignoreExceptions = handle (\(_ :: SomeException) -> return ())
+logAnyException :: (ByteString -> IO ()) -> IO () -> IO ()
+logAnyException log = handle @SomeException (log . encodeUtf8 . pack . displayException)
 
 -- $processTracker
 --
@@ -254,11 +256,11 @@ forkExecuteLog cmd args menv mwdir mstdin log = bracketOnError
             , child_group = Nothing
             , child_user = Nothing
             }
-        ignoreExceptions $ addAttachMessage pipes ph
-        void $ forkIO $ ignoreExceptions $
+        logAnyException log $ addAttachMessage pipes ph
+        void $ forkIO $ logAnyException log $
             runConduit (sourceHandle readerH .| CL.mapM_ log) `finally` hClose readerH
         case (min, mstdin) of
-            (Just h, Just source) -> void $ forkIO $ ignoreExceptions $
+            (Just h, Just source) -> void $ forkIO $ logAnyException log $
                 runConduit (source .| sinkHandle h) `finally` hClose h
             (Nothing, Nothing) -> return ()
             _ -> error "Invariant violated: Data.Conduit.Process.Unix.forkExecuteLog"
