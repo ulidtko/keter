@@ -34,7 +34,7 @@ createLoggerViaConfig KeterConfig{..} name = do
   let logType =
        if kconfigRotateLogs
          -- XXX: LogFileNoRotate is a patch for testing #294
-         then FL.LogFileNoRotate (defaultRotationSpec logFile) defaultBufferSize
+         then FL.LogFileNoRotate logFile defaultBufferSize
          else FL.LogStderr defaultBufferSize
   liftIO $ createDirectoryIfMissing True (takeDirectory logFile)
   mkLogger logType <$> FL.newFastLogger logType
